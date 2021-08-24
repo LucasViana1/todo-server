@@ -6,25 +6,23 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: '20mb' }));
 
-const port = 4444;
-let list = '';
+let list = [];
 
 app.post('/list', (req, res, next) => {
-  const { task } = req.body;
-  console.log('add list')
-  console.log(task)
-  list += task;
-  res.write('task ok')
+  const { id, value } = req.body;
+  list.push({ id, value });
 })
 
 app.get('/list', (req, res) => {
   console.log('Cliente connected')
+  console.log(req.headers)
   res.setHeader('Content-Type', 'text/event-stream')
   res.setHeader('Access-Control-Allow-Origin', '*')
   // res.setHeader('Connection', 'keep-alive')
 
   const intervalId = setInterval(() => {
-    res.write(`data: ${list}\n\n`)
+    const stringList = JSON.stringify(list)
+    res.write(`data: ${stringList}\n\n`)
     // res.flushHeaders()
   }, 1000);
 
@@ -35,6 +33,6 @@ app.get('/list', (req, res) => {
   })
 })
 
-app.listen(port, () => {
-  console.log(`Server open, port: ${port}`)
+app.listen(4444, () => {
+  console.log(`Server open, port: 4444`)
 })
